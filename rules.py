@@ -13,35 +13,33 @@
 # limitations under the License.
 #
 
-def find_rules_for_cve(api, configuration, api_version, api_exception, cve_id):
-    """ Finds the intrusion prevention rules for a CVE.
-    :param api: The Deep Security API modules.
-    :param configuration: Configuration object to pass to the api client.
-    :param api_version: The version of the API to use.
-    :param api_exception: The Deep Security API exception module.
-    :param cve_id: The ID of the CVE.
-    :return: The intrusion prevention rule ID, or None if no rule is found.
-    """
+def find_rules_for_recommendable(api, configuration, api_version, api_exception):
 
     rule_id_s = []
 
-    # Set search criteria
+    # Set search criteria for recommendable rule
     search_criteria = api.SearchCriteria()
-    search_criteria.field_name = "RECOMMENDABLE"
-    search_criteria.string_value = "No"
-    search_criteria.string_test = "equal"
+    search_criteria.field_name = "recommendationsMode"
+    search_criteria.choice_value = "disabled"
+    search_criteria.choice_test = "equal"
 
-    # Create a search filter
+    search_criteria2 = api.SearchCriteria()
+    search_criteria2.field_name = "severity"
+    search_criteria2.choice_value = "high"
+    search_criteria2.choice_test = "equal"
+
+    # Create a search filter for recommendable
     search_filter = api.SearchFilter()
-    search_filter.search_criteria = [search_criteria]
+    search_filter.search_criteria = [search_criteria, search_criteria2]
+
+
 
     try:
         # Search for all intrusion prevention rules for the CVE
         ip_rules_api = api.IntrusionPreventionRulesApi(api.ApiClient(configuration))
         ip_rules_search_results = ip_rules_api.search_intrusion_prevention_rules(api_version,
-                                                                                 search_filter=search_filter)
-        print(ip_rules_search_results)
-        # Get the intrusion prevention rule IDs for the CVE from the results
+                                                                             search_filter=search_filter)
+        # Get the intrusion prevention rule IDs for the RECOMMENDABLE field set to No from the results
         for rule in ip_rules_search_results.intrusion_prevention_rules:
             rule_id_s.append(rule.id)
 
@@ -49,8 +47,6 @@ def find_rules_for_cve(api, configuration, api_version, api_exception, cve_id):
 
     except api_exception as e:
         return "Exception: " + str(e)
-
-
 
 
 def get_intrusion_prevention_recommendations(api, configuration, api_version, api_exception, computer_id):

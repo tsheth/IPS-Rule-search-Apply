@@ -49,24 +49,22 @@ def find_rules_for_recommendable(api, configuration, api_version, api_exception)
         return "Exception: " + str(e)
 
 
-def get_intrusion_prevention_recommendations(api, configuration, api_version, api_exception, computer_id):
+def apply_intrusion_prevention_recommendations(api, configuration, api_version, api_exception, rule_id):
     """Obtains the list of recommended intrusion prevention rules to apply to a computer, according to the results of the last recommendation scan.
     :param api: The Deep Security API modules.
     :param configuration: Configuration object to pass to the api client.
     :param api_version: The version of the API to use.
     :param api_exception: The Deep Security API exception module.
-    :param computer_id: The ID of the computer that was scanned.
+    :param rule_id: The ID of rules that recommendable set to no.
     :return: A list of recommended Intrusion Prevention rules to apply to a computer,
     according to the results of the last recommendation scan or None if no scan was performed.
     """
 
-    ip_recommendations_api = api.ComputerIntrusionPreventionRuleAssignmentsRecommendationsApi(
-        api.ApiClient(configuration))
-
+    ips_recommendations_api = api.PolicyIntrusionPreventionRuleAssignmentsRecommendationsApi(api.ApiClient(configuration))
+    policy_id = 1001
     try:
-        ip_assignments = ip_recommendations_api.list_intrusion_prevention_rule_ids_on_computer(computer_id, api_version,
-                                                                                               overrides=False)
-        return ip_assignments.recommended_to_assign_rule_ids
+        ip_assignments = ips_recommendations_api.add_intrusion_prevention_rule_ids_to_policy(policy_id, api_version, intrusion_prevention_rule_ids=rule_id, overrides=False)
+        return ip_assignments
 
     except api_exception as e:
         return "Exception: " + str(e)

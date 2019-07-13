@@ -1,17 +1,4 @@
-# Copyright 2019 Trend Micro.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
+
 
 def find_rules_for_recommendable(api, configuration, api_version, api_exception):
 
@@ -49,7 +36,7 @@ def find_rules_for_recommendable(api, configuration, api_version, api_exception)
         return "Exception: " + str(e)
 
 
-def apply_intrusion_prevention_recommendations(api, configuration, api_version, api_exception, rule_id):
+def apply_intrusion_prevention_recommendations(api, configuration, api_version, api_exception, rule_id, policy_id_no):
     """Obtains the list of recommended intrusion prevention rules to apply to a computer, according to the results of the last recommendation scan.
     :param api: The Deep Security API modules.
     :param configuration: Configuration object to pass to the api client.
@@ -61,10 +48,12 @@ def apply_intrusion_prevention_recommendations(api, configuration, api_version, 
     """
 
     ips_recommendations_api = api.PolicyIntrusionPreventionRuleAssignmentsRecommendationsApi(api.ApiClient(configuration))
-    policy_id = 1001
+    rule_ids_obj = api.models.RuleIDs(rule_id)
+    policy_id = policy_id_no
     try:
-        ip_assignments = ips_recommendations_api.add_intrusion_prevention_rule_ids_to_policy(policy_id, api_version, intrusion_prevention_rule_ids=rule_id, overrides=False)
-        return ip_assignments
+        ip_assignments = ips_recommendations_api.add_intrusion_prevention_rule_ids_to_policy(policy_id, api_version, intrusion_prevention_rule_ids=rule_ids_obj, overrides=False)
+        print(ip_assignments)
+        return "success"
 
     except api_exception as e:
         return "Exception: " + str(e)

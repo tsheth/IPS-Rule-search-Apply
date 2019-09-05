@@ -15,9 +15,14 @@ def find_rules_for_recommendable(api, configuration, api_version, api_exception)
     search_criteria2.choice_value = "high"
     search_criteria2.choice_test = "equal"
 
+    search_criteria3 = api.SearchCriteria()
+    search_criteria3.field_name = "severity"
+    search_criteria3.choice_value = "critical"
+    search_criteria3.choice_test = "equal"
+
     # Create a search filter for recommendable
     search_filter = api.SearchFilter()
-    search_filter.search_criteria = [search_criteria, search_criteria2]
+    search_filter.search_criteria = [search_criteria, search_criteria2, search_criteria3]
 
 
 
